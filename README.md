@@ -121,6 +121,36 @@ Bulut senkronizasyonu istiyorsanız:
 
 4. `firebase_credentials.json` dosyanızı proje kök dizinine yerleştirin
 
+### 🔑 Cihaz Kodu Sistemi
+
+Sistem, **her cihaz için otomatik olarak benzersiz bir kod üretir**. İlk çalıştırmada:
+
+1. 6 karakterlik rastgele bir cihaz kodu oluşturulur (örn: `A1B2C3`)
+2. Bu kod `device_code.txt` dosyasına kaydedilir
+3. Aynı kod sonraki tüm çalıştırmalarda kullanılır
+
+**Neden önemli?**
+- Her cihaz Firebase'de kendi verilerini **ayrı bir ID altında** saklar
+- Birden fazla sayaç cihazını aynı Firebase projesinde kullanabilirsiniz
+- Her cihazın sayımları birbirinden bağımsızdır: `kisi_sayimi/{device_code}/`
+
+**Örnek Firebase yapısı (3 farklı cihaz):**
+```
+kisi_sayimi/
+  ├── A1B2C3/              # Cihaz 1
+  │   ├── anlik_sayi: 42
+  │   └── daily_totals/...
+  ├── D4E5F6/              # Cihaz 2
+  │   ├── anlik_sayi: 28
+  │   └── daily_totals/...
+  └── G7H8I9/              # Cihaz 3
+      ├── anlik_sayi: 15
+      └── daily_totals/...
+```
+
+> **Not**: Cihaz kodunu manuel olarak değiştirmek isterseniz, `device_code.txt` dosyasını silin. Program yeni bir kod oluşturacaktır.
+
+
 ## 🎯 Kullanım
 
 ### Temel Kullanım
