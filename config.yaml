@@ -1,0 +1,24 @@
+video:
+  source: 0
+  width: 1280
+  height: 720
+  show_window: true
+
+yolo:
+  weights: models/yolov8n.pt
+  conf_thres: 0.35
+  iou_thres: 0.45
+  classes: [0]
+
+deepsort:
+  max_age: 30
+  n_init: 3
+  nn_budget: 100
+
+counting:
+  entry_line: [200, 500, 1080, 500]
+  direction: both
+  recount_ttl_sec: 30
+
+database:
+  path: db/passenger_count.db

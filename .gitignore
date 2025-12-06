@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sensitive Files - Firebase & Credentials
+firebase_credentials.json
+.env
+
+# Device-Specific Files
+device_code.txt
+device_id.txt
+user_uid.txt
+
+# Database Files
+db/*.db
+db/*.db-journal
+
+# Log Files
+logs/
+*.log
+
+# Model Weights (download separately)
+models/*.pt
+!models/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db

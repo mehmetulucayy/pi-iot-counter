@@ -1,0 +1,12 @@
+# Core Dependencies
+ultralytics==8.3.25
+opencv-python==4.10.0.84
+numpy>=1.26.0
+deep-sort-realtime==1.3.2
+PyYAML>=6.0.1
+sqlite-utils>=3.36
+python-dotenv>=1.0.0
+
+# Optional: Firebase Integration
+# Uncomment the line below if you plan to use Firebase cloud sync
+# firebase-admin>=6.0.0

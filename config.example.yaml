@@ -1,0 +1,45 @@
+# Video Source Configuration
+video:
+  # Camera source: 0 for default webcam, or path to video file
+  source: 0
+  # Resolution settings (optional)
+  width: 1280
+  height: 720
+  # Show live preview window
+  show_window: true
+
+# YOLO Detection Settings
+yolo:
+  # Path to YOLOv8 model weights
+  # Download from: https://github.com/ultralytics/assets/releases
+  weights: models/yolov8n.pt
+  # Confidence threshold (0.0-1.0)
+  conf_thres: 0.35
+  # IoU threshold for NMS (0.0-1.0)
+  iou_thres: 0.45
+  # Classes to detect: [0] = person only
+  classes: [0]
+
+# DeepSORT Tracker Settings
+deepsort:
+  # Maximum age of tracks without detections before deletion
+  max_age: 30
+  # Minimum consecutive detections before track is confirmed
+  n_init: 3
+  # Maximum size of appearance feature database
+  nn_budget: 100
+
+# Counting Line Configuration
+counting:
+  # Entry line coordinates: [x1, y1, x2, y2]
+  # Adjust these based on your camera view
+  entry_line: [200, 500, 1080, 500]
+  # Count direction: "up", "down", or "both"
+  direction: both
+  # Time (seconds) before same person can be recounted
+  recount_ttl_sec: 30
+
+# Database Settings
+database:
+  # SQLite database file path
+  path: db/passenger_count.db
