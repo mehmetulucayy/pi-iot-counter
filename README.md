@@ -1,271 +1,271 @@
-# Real-Time Passenger Counting System
+# Gerçek Zamanlı Yolcu Sayma Sistemi
 
-A high-performance, multi-threaded passenger counting system using YOLOv8 for person detection and DeepSORT for object tracking. Designed for real-time video analysis with optional cloud synchronization.
+YOLOv8 kişi tespiti ve DeepSORT nesne takibi kullanarak gerçek zamanlı video analizi için tasarlanmış yüksek performanslı, çok thread'li yolcu sayma sistemi. Opsiyonel bulut senkronizasyonu ile birlikte gelir.
 
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-## ✨ Features
+## ✨ Özellikler
 
-- **Real-Time Detection**: YOLOv8-based person detection with configurable confidence thresholds
-- **Accurate Tracking**: DeepSORT algorithm for robust multi-object tracking
-- **Line Crossing Counter**: Configurable counting line with bidirectional support
-- **Multi-Threaded Pipeline**: Optimized performance with separate threads for camera, detection, tracking, and logging
-- **Local Storage**: SQLite database for persistent count records
-- **Daily Logging**: Automatic text logs organized by date
-- **Optional Cloud Sync**: Firebase Realtime Database integration for remote monitoring
-- **Live Visualization**: Real-time display with tracking overlays and statistics
+- **Gerçek Zamanlı Tespit**: Yapılandırılabilir güven eşikleri ile YOLOv8 tabanlı kişi tespiti
+- **Hassas Takip**: Sağlam çoklu nesne takibi için DeepSORT algoritması
+- **Çizgi Geçiş Sayacı**: Çift yönlü destek ile yapılandırılabilir sayım çizgisi
+- **Çok Thread'li Pipeline**: Kamera, tespit, takip ve kayıt için ayrı thread'lerle optimize edilmiş performans
+- **Yerel Depolama**: Kalıcı sayım kayıtları için SQLite veritabanı
+- **Günlük Kayıtlar**: Tarihe göre organize edilmiş otomatik metin logları
+- **Opsiyonel Bulut Senkronizasyonu**: Uzaktan izleme için Firebase Realtime Database entegrasyonu
+- **Canlı Görselleştirme**: Takip overlay'leri ve istatistikler ile gerçek zamanlı görüntüleme
 
-## 🏗️ Architecture
+## 🏗️ Mimari
 
-The system uses a **producer-consumer pattern** with the following components:
+Sistem aşağıdaki bileşenlerle **üretici-tüketici modeli** kullanır:
 
 ```
-Camera → Detector → Tracker → [Display, Database, Logger, Firebase]
-  ↓         ↓         ↓
-Thread 1  Thread 2  Thread 3  → Threads 4-7
+Kamera → Algılayıcı → Takipçi → [Ekran, Veritabanı, Logger, Firebase]
+  ↓         ↓          ↓
+Thread 1  Thread 2  Thread 3  → Thread 4-7
 ```
 
 ### Thread Pipeline
 
-1. **CameraThread**: Captures video frames from camera/file
-2. **DetectorThread**: Runs YOLOv8 inference for person detection
-3. **TrackerThread**: Updates DeepSORT tracker and counts line crossings
-4. **DBThread**: Writes count events to SQLite database
-5. **DailyTextLoggerThread**: Maintains daily text logs
-6. **FirebaseWriterThread**: Syncs counts to Firebase (optional)
-7. **DisplayThread**: Shows real-time visualization window
+1. **CameraThread**: Kamera/dosyadan video karelerini yakalar
+2. **DetectorThread**: Kişi tespiti için YOLOv8 çıkarımını çalıştırır
+3. **TrackerThread**: DeepSORT takipçisini günceller ve çizgi geçişlerini sayar
+4. **DBThread**: Sayım olaylarını SQLite veritabanına yazar
+5. **DailyTextLoggerThread**: Günlük metin loglarını tutar
+6. **FirebaseWriterThread**: Sayımları Firebase'e senkronize eder (opsiyonel)
+7. **DisplayThread**: Gerçek zamanlı görselleştirme penceresi gösterir
 
-## 📋 Requirements
+## 📋 Gereksinimler
 
 - Python 3.8+
-- Webcam or video file source
-- YOLOv8 model weights
+- Webcam veya video dosyası kaynağı
+- YOLOv8 model ağırlıkları
 
-## 🚀 Installation
+## 🚀 Kurulum
 
-### 1. Clone the Repository
+### 1. Repository'yi Klonlayın
 
 ```bash
-git clone <repository-url>
-cd yolcu_sayma_deepsort_threaded
+git clone https://github.com/mehmetulucayy/pi-iot-counter.git
+cd pi-iot-counter
 ```
 
-### 2. Install Dependencies
+### 2. Bağımlılıkları Yükleyin
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**For Firebase integration** (optional), uncomment the line in `requirements.txt`:
+**Firebase entegrasyonu için** (opsiyonel), `requirements.txt` içindeki satırın yorum işaretini kaldırın:
 ```bash
 pip install firebase-admin
 ```
 
-### 3. Download YOLOv8 Model
+### 3. YOLOv8 Modelini İndirin
 
-Download a YOLOv8 model and place it in the `models/` directory:
+Bir YOLOv8 modeli indirin ve `models/` dizinine yerleştirin:
 
 ```bash
-# YOLOv8 Nano (fastest, recommended for real-time)
+# YOLOv8 Nano (en hızlı, gerçek zamanlı için önerilir)
 wget https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.pt -P models/
 
-# Or YOLOv8 Small (more accurate)
+# Veya YOLOv8 Small (daha doğru)
 wget https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8s.pt -P models/
 ```
 
-### 4. Configure the Application
+### 4. Uygulamayı Yapılandırın
 
-Copy the example configuration:
+Örnek yapılandırmayı kopyalayın:
 
 ```bash
 cp config.example.yaml config.yaml
 ```
 
-Edit `config.yaml` to match your setup (camera source, counting line position, etc.)
+Kurulumunuza uyacak şekilde `config.yaml` dosyasını düzenleyin (kamera kaynağı, sayım çizgisi konumu, vb.)
 
-## ⚙️ Configuration
+## ⚙️ Yapılandırma
 
-### Basic Configuration (`config.yaml`)
+### Temel Yapılandırma (`config.yaml`)
 
 ```yaml
 video:
-  source: 0              # 0 for webcam, or path to video file
+  source: 0              # Webcam için 0, veya video dosyası yolu
   width: 1280
   height: 720
   show_window: true
 
 counting:
   entry_line: [200, 500, 1080, 500]  # [x1, y1, x2, y2]
-  direction: both                     # "up", "down", or "both"
-  recount_ttl_sec: 30                 # Prevent recounting same person
+  direction: both                     # "up", "down", veya "both"
+  recount_ttl_sec: 30                 # Aynı kişinin tekrar sayılmasını önle
 ```
 
-### Optional: Firebase Setup
+### Opsiyonel: Firebase Kurulumu
 
-If you want cloud synchronization:
+Bulut senkronizasyonu istiyorsanız:
 
-1. Copy the environment template:
+1. Environment template'ini kopyalayın:
    ```bash
    cp .env.example .env
    ```
 
-2. Create a Firebase project and download service account credentials
+2. Bir Firebase projesi oluşturun ve service account kimlik bilgilerini indirin
 
-3. Edit `.env`:
+3. `.env` dosyasını düzenleyin:
    ```env
    ENABLE_FIREBASE=true
    FIREBASE_DATABASE_URL=https://your-project-default-rtdb.firebaseio.com/
    FIREBASE_CREDENTIALS_FILE=firebase_credentials.json
    ```
 
-4. Place your `firebase_credentials.json` file in the project root
+4. `firebase_credentials.json` dosyanızı proje kök dizinine yerleştirin
 
-## 🎯 Usage
+## 🎯 Kullanım
 
-### Basic Usage
+### Temel Kullanım
 
 ```bash
 python main_deepsort_threaded.py
 ```
 
-### With Custom Configuration
+### Özel Yapılandırma ile
 
 ```bash
 python main_deepsort_threaded.py --config my_config.yaml
 ```
 
-### With Video File
+### Video Dosyası ile
 
 ```bash
 python main_deepsort_threaded.py --source video.mp4
 ```
 
-### Keyboard Controls
+### Klavye Kontrolleri
 
-- **ESC**: Stop the application
+- **ESC**: Uygulamayı durdur
 
-## 📊 Data Storage
+## 📊 Veri Depolama
 
-### Local Database
+### Yerel Veritabanı
 
-Count events are stored in `db/passenger_count.db` with schema:
+Sayım olayları şu şema ile `db/passenger_count.db` içinde saklanır:
 
 ```sql
 CREATE TABLE counts (
   id INTEGER PRIMARY KEY,
-  ts INTEGER,           -- Unix timestamp
-  track_id INTEGER,     -- Tracker ID
-  direction TEXT        -- 'up' or 'down'
+  ts INTEGER,           -- Unix zaman damgası
+  track_id INTEGER,     -- Takip ID'si
+  direction TEXT        -- 'up' veya 'down'
 );
 ```
 
-### Daily Logs
+### Günlük Loglar
 
-Text logs are saved in `logs/YYYY-MM-DD.txt`:
+Metin logları `logs/YYYY-MM-DD.txt` formatında kaydedilir:
 
 ```
 2025-12-06 14:23:45 - {"timestamp": 1733493825, "count": 15}
 ```
 
-### Firebase Structure (if enabled)
+### Firebase Yapısı (etkinse)
 
 ```
 kisi_sayimi/
   └── {device_code}/
-      ├── anlik_sayi: 42              # Current count
+      ├── anlik_sayi: 42              # Mevcut sayım
       └── daily_totals/
-          └── 2025-12-06: 156         # Daily total
+          └── 2025-12-06: 156         # Günlük toplam
 ```
 
-## 🛠️ Customization
+## 🛠️ Özelleştirme
 
-### Adjusting the Counting Line
+### Sayım Çizgisini Ayarlama
 
-1. Run the application and observe the video feed
-2. Note the coordinates where you want the counting line
-3. Update `entry_line` in `config.yaml`: `[x1, y1, x2, y2]`
-4. People crossing this line will be counted
+1. Uygulamayı çalıştırın ve video akışını gözlemleyin
+2. Sayım çizgisini istediğiniz koordinatları not edin
+3. `config.yaml` içinde `entry_line` değerini güncelleyin: `[x1, y1, x2, y2]`
+4. Bu çizgiyi geçen kişiler sayılacaktır
 
-### Detection Parameters
+### Algılama Parametreleri
 
-- **conf_thres**: Higher = fewer false positives, may miss people (default: 0.35)
-- **iou_thres**: Non-max suppression threshold (default: 0.45)
+- **conf_thres**: Yüksek = daha az yanlış pozitif, kişileri kaçırabilir (varsayılan: 0.35)
+- **iou_thres**: Non-max suppression eşiği (varsayılan: 0.45)
 
-### Tracking Parameters
+### Takip Parametreleri
 
-- **max_age**: Frames to keep a track without detection (default: 30)
-- **n_init**: Detections needed to confirm a track (default: 3)
-- **nn_budget**: Appearance feature database size (default: 100)
+- **max_age**: Algılama olmadan bir takibi tutma süresi (kare sayısı) (varsayılan: 30)
+- **n_init**: Bir takibi onaylamak için gereken algılama sayısı (varsayılan: 3)
+- **nn_budget**: Görünüm özelliği veritabanı boyutu (varsayılan: 100)
 
-## 🔍 Troubleshooting
+## 🔍 Sorun Giderme
 
-### Camera Not Opening
+### Kamera Açılmıyor
 
-- Check `source` in config (try 0, 1, or 2 for different cameras)
-- Verify camera permissions
-- Test with: `python -c "import cv2; print(cv2.VideoCapture(0).read())"`
+- Config'deki `source` değerini kontrol edin (farklı kameralar için 0, 1, veya 2 deneyin)
+- Kamera izinlerini doğrulayın
+- Şununla test edin: `python -c "import cv2; print(cv2.VideoCapture(0).read())"`
 
-### Low Frame Rate
+### Düşük Kare Hızı
 
-- Use a smaller YOLOv8 model (yolov8n.pt)
-- Reduce video resolution in config
-- Ensure CPU is not overloaded
+- Daha küçük bir YOLOv8 modeli kullanın (yolov8n.pt)
+- Config'de video çözünürlüğünü azaltın
+- CPU'nun aşırı yüklenmediğinden emin olun
 
-### Incorrect Counts
+### Yanlış Sayımlar
 
-- Adjust counting line position
-- Increase `recount_ttl_sec` to prevent duplicate counts
-- Tune `conf_thres` for better detection
+- Sayım çizgisi konumunu ayarlayın
+- Tekrarlanan sayımları önlemek için `recount_ttl_sec` değerini artırın
+- Daha iyi algılama için `conf_thres` değerini ayarlayın
 
-### Firebase Connection Issues
+### Firebase Bağlantı Sorunları
 
-- Verify `ENABLE_FIREBASE=true` in `.env`
-- Check credentials file path and database URL
-- Ensure Firebase Realtime Database rules allow writes
+- `.env` içinde `ENABLE_FIREBASE=true` olduğunu doğrulayın
+- Kimlik bilgileri dosya yolunu ve veritabanı URL'sini kontrol edin
+- Firebase Realtime Database kurallarının yazma işlemine izin verdiğinden emin olun
 
-## 📁 Project Structure
+## 📁 Proje Yapısı
 
 ```
-yolcu_sayma_deepsort_threaded/
-├── main_deepsort_threaded.py    # Main application entry point
-├── firebase_manager.py           # Firebase integration (optional)
-├── config.yaml                   # Configuration file
-├── requirements.txt              # Python dependencies
-├── .env.example                  # Environment variables template
-├── .gitignore                    # Git ignore patterns
+pi-iot-counter/
+├── main_deepsort_threaded.py    # Ana uygulama giriş noktası
+├── firebase_manager.py           # Firebase entegrasyonu (opsiyonel)
+├── config.yaml                   # Yapılandırma dosyası
+├── requirements.txt              # Python bağımlılıkları
+├── .env.example                  # Environment değişkenleri şablonu
+├── .gitignore                    # Git ignore kalıpları
 ├── db/
-│   ├── sqlite_logger.py         # Database handler
-│   └── passenger_count.db       # SQLite database (created at runtime)
+│   ├── sqlite_logger.py         # Veritabanı işleyicisi
+│   └── passenger_count.db       # SQLite veritabanı (çalışma zamanında oluşturulur)
 ├── tracker/
 │   └── deep_sort_tracker.py     # DeepSORT wrapper
 ├── utils/
-│   ├── pipeline.py              # Thread pipeline components
-│   ├── zone_counter.py          # Line crossing counter logic
-│   └── draw.py                  # Visualization utilities
+│   ├── pipeline.py              # Thread pipeline bileşenleri
+│   ├── zone_counter.py          # Çizgi geçiş sayacı mantığı
+│   └── draw.py                  # Görselleştirme araçları
 ├── models/
-│   └── yolov8n.pt              # YOLOv8 model (download separately)
-└── logs/                        # Daily text logs (created at runtime)
+│   └── yolov8n.pt              # YOLOv8 modeli (ayrı olarak indirilir)
+└── logs/                        # Günlük metin logları (çalışma zamanında oluşturulur)
 ```
 
-## 🤝 Contributing
+## 🤝 Katkıda Bulunma
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Katkılar memnuniyetle karşılanır! Lütfen bir Pull Request göndermekten çekinmeyin.
 
-## 📝 License
+## 📝 Lisans
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Bu proje MIT Lisansı altında lisanslanmıştır - detaylar için [LICENSE](LICENSE) dosyasına bakın.
 
-## 🙏 Acknowledgments
+## 🙏 Teşekkürler
 
-- [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) - Object detection
-- [DeepSORT](https://github.com/nwojke/deep_sort) - Multi-object tracking
-- [deep-sort-realtime](https://github.com/levan92/deep_sort_realtime) - DeepSORT implementation
+- [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) - Nesne algılama
+- [DeepSORT](https://github.com/nwojke/deep_sort) - Çoklu nesne takibi
+- [deep-sort-realtime](https://github.com/levan92/deep_sort_realtime) - DeepSORT implementasyonu
 
-## 📧 Support
+## 📧 Destek
 
-For issues and questions, please open an issue on GitHub.
+Sorunlar ve sorular için lütfen GitHub'da bir issue açın.
 
 ---
 
-**Note**: This system is designed for counting people crossing a line. For occupancy counting or zone-based analytics, modifications to the counting logic will be needed.
+**Not**: Bu sistem bir çizgiyi geçen kişileri saymak için tasarlanmıştır. Doluluk sayımı veya bölge tabanlı analizler için sayım mantığında değişiklikler gerekecektir.
